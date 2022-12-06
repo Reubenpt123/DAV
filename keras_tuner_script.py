@@ -1,6 +1,8 @@
+print('IMPORTING MODULES...')
+print('')
 import pandas as pd
-from kerastuner.tuners import RandomSearch
-from kerastuner.engine.hyperparameters import HyperParameters
+from keras_tuner.tuners import RandomSearch
+from keras_tuner.engine.hyperparameters import HyperParameters
 import time
 import keras
 from sklearn.model_selection import train_test_split
@@ -11,8 +13,10 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.optimizers import *
 from keras.utils import np_utils
-LOG_DIR = f'../{int(time.time())}'
+LOG_DIR = r'C:\Users\709583\OneDrive - hull.ac.uk\Data Analysis & Visualisation\DAV Assessment\keras_tuner' + str(int(time.time()))
 
+print('TUNING')
+print('')
 df = pd.read_csv('d:\My Drive\Colab Notebooks\DAV Assessment\cefas_smartBuoy\clean_ext_data.csv', parse_dates = ['dateTime'])
 df = df.set_index('dateTime')
 df = df.drop('kd', axis = 1)
@@ -33,24 +37,28 @@ def build_model(hp):  # random search passes this hyperparameter() object
     model.add(Dense(hp.Int('input_units', min_value = 50, max_value = 1000, step = 50), activation = "relu", input_shape = (4, )))
     for i in range(hp.Int('n_layers', 1, 5)):
         model.add(Dense(units = hp.Int(f'dense_layer_{i}_units', min_value = 50, max_value = 1000, step = 50), activation = "relu"))
-        model.add(Dropout(hp.Float(f'dropout_layer_{i}_%', min_value = 0.0, max_value = 0.4, step = 0.1)))
-    model.summary()
+        model.add(Dropout(hp.Float(f'dropout_layer_{i}_%', min_value = 0.0, max_value = 0.5, step = 0.1)))
     model.compile(loss = "mean_squared_error", optimizer = "adam", metrics = ['mean_squared_error'])
     return model
 
 tuner = RandomSearch(
     build_model,
     objective = 'val_mean_squared_error',
-    max_trials = 5,  # how many model variations to test?
+    max_trials = 50,  # how many model variations to test?
     executions_per_trial = 1,  # how many trials per variation? (same model could perform differently)
     directory = LOG_DIR)
 
 tuner.search(x = X_train,
              y = y_train,
              verbose = 1,
-             epochs = 2,
-             batch_size = 64,
+             epochs = 8,
+             batch_size = 30,
              validation_data = (X_test, y_test))
+print('')
+print('...................................................................................')
+print('SEARCH COMPLETE')
+print('...................................................................................')
+print('')
 
-tuner.get_best_hyperparameters()[0].values
-tuner.get_best_models()[0].summary()
+print(tuner.get_best_hyperparameters()[0].values)
+print(tuner.get_best_models()[0].summary())
