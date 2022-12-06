@@ -25,7 +25,7 @@ df = df.dropna()
 phase_0 = df.loc[df['phase'] == 0, :].copy()
 X = phase_0.drop(['fluors', 'phase'], axis = 1).copy()
 y = phase_0['fluors'].copy()
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.35, random_state = 42)
 
 scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
@@ -44,15 +44,15 @@ def build_model(hp):  # random search passes this hyperparameter() object
 tuner = RandomSearch(
     build_model,
     objective = 'val_mean_squared_error',
-    max_trials = 50,  # how many model variations to test?
+    max_trials = 500,  # how many model variations to test?
     executions_per_trial = 1,  # how many trials per variation? (same model could perform differently)
     directory = LOG_DIR)
 
 tuner.search(x = X_train,
              y = y_train,
              verbose = 1,
-             epochs = 8,
-             batch_size = 30,
+             epochs = 10,
+             batch_size = 10,
              validation_data = (X_test, y_test))
 print('')
 print('...................................................................................')
