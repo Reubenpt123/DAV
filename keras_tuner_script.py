@@ -13,6 +13,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.optimizers import *
 from keras.utils import np_utils
+
 LOG_DIR = r'C:\Users\709583\OneDrive - hull.ac.uk\Data Analysis & Visualisation\DAV Assessment\keras_tuner' + str(int(time.time()))
 
 print('TUNING')
@@ -36,11 +37,12 @@ def build_model(hp):  # random search passes this hyperparameter() object
     model = Sequential()
     model.add(Dense(hp.Int('input_units', min_value = 50, max_value = 1000, step = 50), activation = "relu", input_shape = (4, )))
     model.add(Dropout(hp.Float(f'dropout_layer_%', min_value = 0.0, max_value = 0.5, step = 0.1)))
-    for i in range(1, hp.Int('n_layers', min_value = 2, max_value = 5, step = 1)):
+    for i in range(hp.Int('n_layers', min_value = 1, max_value = 5, step = 1)):
         print(f'i = {i}')
         model.add(Dense(units = hp.Int(f'dense_layer_{i}_units', min_value = 50, max_value = 1000, step = 50), activation = "relu"))
         model.add(Dropout(hp.Float(f'dropout_layer_{i}_%', min_value = 0.0, max_value = 0.5, step = 0.1)))
     model.add(Dense(1, activation = "relu"))
+    model.summary()
     model.compile(loss = "mean_squared_error", optimizer = "adam", metrics = ['mean_squared_error'])
     return model
 
@@ -48,7 +50,7 @@ tuner = RandomSearch(
     build_model,
     objective = 'val_mean_squared_error',
     max_trials = 100,  # how many model variations to test?
-    executions_per_trial = 1,  # how many trials per variation? (same model could perform differently)
+    executions_per_trial = 2,  # how many trials per variation? (same model could perform differently)
     directory = LOG_DIR)
 
 tuner.search(x = X_train,
