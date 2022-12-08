@@ -49,8 +49,8 @@ def build_model(hp):  # random search passes this hyperparameter() object
 tuner = RandomSearch(
     build_model,
     objective = 'val_mean_squared_error',
-    max_trials = 100,  # how many model variations to test?
-    executions_per_trial = 2,  # how many trials per variation? (same model could perform differently)
+    max_trials = 500,  # how many model variations to test?
+    executions_per_trial = 1,  # how many trials per variation? (same model could perform differently)
     directory = LOG_DIR)
 
 tuner.search(x = X_train,
