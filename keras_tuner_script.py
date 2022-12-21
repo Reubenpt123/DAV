@@ -48,7 +48,7 @@ tuner = RandomSearch(
     build_model,
     objective = 'val_mean_squared_error',
     max_trials = 100,  # how many model variations to test?
-    executions_per_trial = 1,  # how many trials per variation? (same model could perform differently)
+    executions_per_trial = 1, 
     directory = LOG_DIR)
 
 tuner.search(x = X_train,
