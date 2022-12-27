@@ -1,5 +1,6 @@
 print('IMPORTING MODULES...')
 print('')
+
 import pandas as pd
 from keras_tuner.tuners import RandomSearch
 from keras_tuner.engine.hyperparameters import HyperParameters
@@ -47,7 +48,7 @@ def build_model(hp):  # random search passes this hyperparameter() object
 tuner = RandomSearch(
     build_model,
     objective = 'val_mean_squared_error',
-    max_trials = 100,  # how many model variations to test?
+    max_trials = 500,  # how many model variations to test?
     executions_per_trial = 1, 
     directory = LOG_DIR)
 
